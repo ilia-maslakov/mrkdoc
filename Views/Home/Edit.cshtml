@@ -1,0 +1,17 @@
+@model mrkdoc.Models.ContentMD;
+
+<form asp-action="Edit">
+    <input asp-for="FileName" type="hidden" />
+    <h3>@Model.FileName</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button id="success" type="submit" class="btn btn-success">Сохранить</button>
+                <a asp-action="Index" class="btn btn-info" style="float: right;">Назад</a>
+                <textarea asp-for="Content" contenteditable="true" class="form-control" style="min-height:1200px">
+                    @Model.Content
+                </textarea>
+            </div>
+        </div>
+    </div>
+</form>

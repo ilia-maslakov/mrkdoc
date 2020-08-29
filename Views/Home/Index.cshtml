@@ -1,0 +1,23 @@
+@model IEnumerable<mrkdoc.Models.DirectoryFiles>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="text-center">
+    <h1 class="display-4">Список</h1>
+</div>
+<table class="table">
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>
+            <a asp-action="ViewPage" asp-route-filename="@item.FileName">@item.FileName</a>
+        </td>
+        <td>
+            @Html.DisplayFor(ModelItem => item.FileSize)
+        </td>
+        <td>
+            <a asp-action="Edit" asp-route-filename="@item.FileName">Исправить</a>
+        </td>
+    </tr>
+    }
+</table>

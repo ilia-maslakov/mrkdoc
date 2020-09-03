@@ -1,16 +1,64 @@
 @model mrkdoc.Models.ContentMD;
+<style>
+#renderedMD img {
+  width: 100px;
+}
 
+</style>
 <form asp-action="Edit">
-    <input asp-for="FileName" type="hidden" />
-    <h3>@Model.FileName</h3>
+    <input asp-for="@Model.Path" type="hidden" />
     <div class="row">
+        <div class="col-md-6">
+            <div class="btn-group">
+                <a class="btn btn-success btn-sm" asp-action="AddFile" asp-route-dirname="@Model.Path" asp-route-filename="@Model.FileName">Добавить файлы</a>
+                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Вставить изображение
+                </button>
+                <div class="dropdown-menu">
+
+                    @foreach(var item in ViewBag.Images)
+                    {
+                        <a class="filelist dropdown-item" href="#" data-filename="![@item.TopicName](@item.FileName)"><img  src="@item.FileName" style="max-height:40px" /></a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <a asp-action="ViewPage" asp-route-dirname="@Model.Path" asp-route-filename="@Model.FileName" class="btn btn-sm btn-light" style="float:right;margin-left:12px;">Назад</a>
+            <button id="success" type="submit" class="btn btn-sm btn-success" style="float:right;">Сохранить</button>
+        </div>
+    </div>
+
+
+    <input asp-for="FileName" type="hidden" />
+
+    <div class="row" style="margin-top:4px;border-radius:6px; border:1px solid #e1e4e8">
         <div class="col-md-12">
-            <div class="form-group">
-                <button id="success" type="submit" class="btn btn-success">Сохранить</button>
-                <a asp-action="Index" class="btn btn-info" style="float: right;">Назад</a>
-                <textarea asp-for="Content" contenteditable="true" class="form-control" style="min-height:1200px">
-                    @Model.Content
-                </textarea>
+            <div class="row">
+                <div class="col-md-12">
+                    <span>
+                        <h6 style="margin-top:10px;font-weight:bold">@Model.TopicName/@ViewData["ShortFileName"]</h6>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <textarea asp-for="Content" contenteditable="true" class="form-control" style="height:1200px">
+                            @Model.Content
+                        </textarea>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="form-group">
+                        <div class="rendered-md" id="renderedMD" name="renderedMD" style="margin-top: 4px;border: 1px solid #ced4da; border-radius: 0.25rem;height:1200px;overflow-y:scroll;overflow-x:scroll;">
+                            @ViewData["RenderedMarkdown"]
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

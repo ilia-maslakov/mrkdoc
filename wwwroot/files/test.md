@@ -1,3 +1,11 @@
+__Advertisement__
+
+# Привет f
+
+вапводаопдваолпдвасч  авбдлаподваодпловдалоп вадопдалопдвал важплваждлпждва
+
+:)
+__ eee __
 ---
 __Advertisement :)__
 
@@ -10,7 +18,7 @@ You will like those projects!
 
 ---
 
-# h1 Heading 8-)
+# h1 H  eading :D
 ## h2 Heading
 ### h3 Heading
 #### h4 Heading
@@ -193,7 +201,7 @@ see [how to change output](https://github.com/markdown-it/markdown-it-emoji#chan
 Footnote 1 link[^first].
 
 Footnote 2 link[^second].
-
+Footnote 3 link[^onore].
 Inline footnote^[Text of inline footnote] definition.
 
 Duplicated footnote reference[^second].
@@ -205,6 +213,10 @@ Duplicated footnote reference[^second].
 [^second]: Footnote text.
 
 
+
+[^onore]: note **mark up**
+
+
 ### [Definition lists](https://github.com/markdown-it/markdown-it-deflist)
 
 Term 1
@@ -214,6 +226,8 @@ with lazy continuation.
 
 Term 2 with *inline markup*
 
+:   Definition 2
+:   Definition 12
 :   Definition 2
 
         { some code, part of Definition 2 }
@@ -228,6 +242,8 @@ Term 1
 Term 2
   ~ Definition 2a
   ~ Definition 2b
+  ~ Definition 3a
+  ~ Definition 6b
 
 
 ### [Abbreviations](https://github.com/markdown-it/markdown-it-abbr)

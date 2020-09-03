@@ -1,23 +1,38 @@
-@model IEnumerable<mrkdoc.Models.DirectoryFiles>
+@model IEnumerable<mrkdoc.Models.ContentMD>
 @{
     ViewData["Title"] = "Home Page";
 }
-<div class="text-center">
-    <h1 class="display-4">Список</h1>
+
+<style> 
+.newspaper {
+    column-count: 2;
+    column-gap: 40px;
+    column-rule-style: solid;
+    column-rule-width: 1px;
+    column-rule-color: #aaa;
+}
+</style>
+
+<form asp-action="Search" class="form-inline">
+    <div class="input-group col-md-12">
+        <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Введите текст" aria-label="Введите текст" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button asp-action="Search" class="btn btn-primary" type="submit">Найти</button>
+        </div>
+    </div>
+</form>
+
+<h5 style="margin-top:17px; margin-left:20px">Список статей</h5>
+
+<div class="row" style="margin:10px 20px">
+    <div class="col-md-12">
+        <div class="newspaper">
+        @foreach (var item in Model)
+        {
+            <ul>
+                <a asp-action="ViewPage" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName">@item.TopicName</a>
+            </ul>
+        }
+        </div>
+    </div>
 </div>
-<table class="table">
-    @foreach (var item in Model)
-    {
-    <tr>
-        <td>
-            <a asp-action="ViewPage" asp-route-filename="@item.FileName">@item.FileName</a>
-        </td>
-        <td>
-            @Html.DisplayFor(ModelItem => item.FileSize)
-        </td>
-        <td>
-            <a asp-action="Edit" asp-route-filename="@item.FileName">Исправить</a>
-        </td>
-    </tr>
-    }
-</table>

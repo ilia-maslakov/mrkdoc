@@ -1,6 +1,26 @@
+@model mrkdoc.Models.ContentMD;
+
 <form asp-action="Index">
-    <a asp-action="Index" class="btn btn-info" style="float: right;">Назад</a>
-    <div style="margin-top: 40px;">
-        @ViewData["RenderedMarkdown"]
+    <div class="row" style="border-radius:6px; border:1px solid #e1e4e8">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-9">
+                    <span>
+                        <h6 style="margin-top:10px;font-weight:bold">@Model.TopicName » @ViewData["ShortFileName"]</h6>
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    <a asp-action="Index" class="btn btn-sm btn-light" style="float:right;margin-top:4px;margin-left:12px;">Назад</a>
+                    <a asp-action="Edit" class="btn btn-sm btn-success" asp-route-dirname="@Model.Path" asp-route-filename="@Model.FileName"  style="float:right;margin-top:4px;margin-left:12px;">Исправить</a> 
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div id="view-rendered" data-searchtext='@ViewData["SearchText"]'>
+                    <hr style="margin-top:2px" />
+                    @ViewData["RenderedMarkdown"]
+                </div>
+            </div>
+        </div>
     </div>
 </form>

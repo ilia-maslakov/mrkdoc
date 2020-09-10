@@ -41,7 +41,7 @@ namespace mrkdoc.Controllers
                     string[] files = Directory.GetFiles(Path.Combine(dirName, d), "*.md");
                     foreach (string f in files)
                     {
-                        var df = new ContentMD { Path = d, TopicName = d.Split('/').Last(),  FileName = f };
+                        var df = new ContentMD { Path = d, TopicName = d.Split(Path.DirectorySeparatorChar).Last(),  FileName = f };
                         l.Add(df);
                     }
                 }
@@ -56,12 +56,12 @@ namespace mrkdoc.Controllers
             {
                 var markdown = await System.IO.File.ReadAllTextAsync(filename);
                 ViewBag.RenderedMarkdown = Markdown.ParseHtmlString(markdown);
-                ViewBag.ShortFileName = filename.Split('/').Last();
+                ViewBag.ShortFileName = filename.Split(Path.DirectorySeparatorChar).Last();
                 ViewBag.SearchText = searchText ?? "";
                 var md = new ContentMD
                 {
                     Path = dirname,
-                    TopicName = dirname.Split('/').Last(),
+                    TopicName = dirname.Split(Path.DirectorySeparatorChar).Last(),
                     FileName = filename,
                     Content = markdown
                 };
@@ -78,6 +78,7 @@ namespace mrkdoc.Controllers
         {
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -113,14 +114,14 @@ namespace mrkdoc.Controllers
         {
             if (filename != "")
             {
-                
+                // filename must be full qualyty path
                 String markdown = await System.IO.File.ReadAllTextAsync(filename);
                 ViewBag.RenderedMarkdown = Markdown.ParseHtmlString(markdown);
-                ViewBag.ShortFileName = filename.Split('/').Last();
+                ViewBag.ShortFileName = filename.Split(Path.DirectorySeparatorChar).Last();
                 ViewBag.Images = PrepareImgs(dirname);
                 var md = new ContentMD
                 {
-                    TopicName = dirname.Split('/').Last(),
+                    TopicName = dirname.Split(Path.DirectorySeparatorChar).Last(),
                     Path = dirname,
                     FileName = filename,
                     Content = markdown
@@ -150,7 +151,6 @@ namespace mrkdoc.Controllers
             }
         }
 
-
         private IEnumerable<ContentMD> PrepareImgs(string dirname)
         {
             string[] extensions = { ".jpeg", ".jpg", ".png", ".gif" };
@@ -165,13 +165,47 @@ namespace mrkdoc.Controllers
                 foreach (string f in files.Where(s => extensions.Any(ext => ext == Path.GetExtension(s))))
                 {
                     var cropName = f.Replace(" ", "%20").Substring(prefix.Length);
-                    var limg = new ContentMD { TopicName = f.Split('/').Last(), FileName = cropName };
+                    var limg = new ContentMD { TopicName = f.Split(Path.DirectorySeparatorChar).Last(), FileName = cropName };
                     listImages.Add(limg);
                 }
             }
             return listImages;
           
         }
+
+        public async Task<IActionResult> AddTopic()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTopic([Bind("TopicName")] ContentMD cnt)
+        {
+            if (ModelState.IsValid)
+            {
+                string filename = "README.md";
+                string newpath = Path.Combine(_appEnvironment.WebRootPath, "files", cnt.TopicName);
+                try
+                {
+                    System.IO.Directory.CreateDirectory(newpath);
+                    filename = Path.Combine(newpath, filename);
+                    System.IO.File.WriteAllText(filename, "# " + cnt.TopicName);
+                }
+                catch (System.Exception ex)
+                {
+                    var nf = new NotFoundObjectResult(ex.Message);
+                    return NotFound(nf);
+                }
+                return RedirectToAction("Edit", new { dirname = newpath, filename });
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+
+
 
 /*
         private async IAsyncEnumerable<ContentMD> PrepareImgsAsync(string dirname)
@@ -185,7 +219,7 @@ namespace mrkdoc.Controllers
 
                 await foreach (string f in files)
                 {
-                    var limg = new ContentMD { TopicName = f.Split('/').Last(), FileName = f };
+                    var limg = new ContentMD { TopicName = f.Split(Path.DirectorySeparatorChar).Last(), FileName = f };
                     yield return limg;
                 }
             }

@@ -1,0 +1,12 @@
+@model mrkdoc.Models.ContentMD
+@{
+    ViewData["Title"] = "Добавление статьи";
+}
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="AddTopic" method="post">
+            <input asp-for="TopicName" placeholder="Название статьи..." class="form-control"></input>
+            <button id="success" type="submit" class="btn btn-sm btn-success" style="float:right;">Добавить</button>
+        </form>
+    </div>
+</div>

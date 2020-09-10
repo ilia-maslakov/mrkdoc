@@ -11,20 +11,18 @@
 <a asp-action="Index" class="btn btn-sm btn-light" style="float:right;margin-left:12px;">Назад</a>
 
 <form asp-action="Search">
-    <table class="table">
-        @foreach (var item in Model)
-        {
-        <div class="row res">
-            <div class="col-md-10">
-                <a asp-action="ViewPage" asp-route-searchText="@ViewData["SearchText"]" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName">@item.TopicName</a>
-                <div style="margin-left:6px; padding:3px">
-                @Html.Raw(@item.Content)
-                </div>
+    @foreach (var item in Model)
+    {
+    <div class="row res">
+        <div class="col-md-10">
+            <a asp-action="ViewPage" asp-route-searchText="@ViewData["SearchText"]" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName">@item.TopicName</a>
+            <div style="margin-left:6px; padding:3px">
+            @Html.Raw(@item.Content)
             </div>
         </div>
-        }
-        @if(Model.Count()<1){
-            <p>Нет подходящих статей по фразе: <b>@ViewData["searchText"]</b></p>
-        }
-    </table>
+    </div>
+    }
+    @if(Model.Count()<1){
+        <p>Нет подходящих статей по фразе: <b>@ViewData["searchText"]</b></p>
+    }
 </form>

@@ -2,13 +2,13 @@
 @{
     ViewData["Title"] = "Добавление файла";
 }
-<h4>Выберите файл для загрузки</h4>
-<div class="row">
-    <div class="col-md-5">
-        <form asp-action="AddFile" asp-controller="Home" asp-route-dirname="@ViewData["DirName"]" asp-route-filename="@ViewData["FileName"]" method="post" enctype="multipart/form-data">
-            <input type="file" class="form-control-file" name="uploadedFile" multiple /><br>
-            <input type="submit" class="btn btn-primary btn-sm" value="Загрузить выбранные файлы" />
-        </form>
+
+<form asp-action="AddFile" asp-controller="Home" asp-route-dirname="@ViewData["DirName"]" asp-route-filename="@ViewData["FileName"]" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-12 custom-file border border-secondary rounded" style="background-image: url(/assets/files.svg); background-position: center center; background-repeat: no-repeat; background-color:whitesmoke; height:200px">
+            <input type="file" class="custom-file-input" id="customFile" name="uploadedFile" multiple aria-label="выберите с диска" style="height:100%">
+            <label class="custom-file-label" for="customFile"  style="background-color: transparent;border-style: none;text-align: center;font-size: x-large;height: 100%;">Перетащите файлы сюда</label>
+        </div>
+        <input type="submit" class="btn btn-primary btn-sm" style="margin:20px" value="Загрузить выбранные файлы" />
     </div>
-</div>
- 
+</form>

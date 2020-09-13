@@ -1,4 +1,13 @@
 
+.upload-input {
+  background-color: transparent;
+  border-style: none;
+  text-align: center;
+  font-size: x-large;
+  height: 100%;
+  padding: 33px;
+}
+
 code {
     padding: 2px 4px;
     font-size: 90%;

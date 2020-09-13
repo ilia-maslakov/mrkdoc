@@ -2,11 +2,10 @@
 @{
     ViewData["Title"] = "Добавление статьи";
 }
-<div class="row">
-    <div class="col-md-5">
-        <form asp-action="AddTopic" method="post">
-            <input asp-for="TopicName" placeholder="Название статьи..." class="form-control"></input>
-            <button id="success" type="submit" class="btn btn-sm btn-success" style="float:right;">Добавить</button>
-        </form>
+
+<form class="form-inline" asp-action="AddTopic" method="post">
+    <div class="form-group mx-sm-3 mb-2">
+        <input asp-for="TopicName" placeholder="Название статьи..." class="form-control" style="min-width:450px">
     </div>
-</div>
+    <button id="success" type="submit" class="btn btn-success  mb-2" style="float:right;">Добавить</button>
+</form>

@@ -136,11 +136,12 @@ namespace mrkdoc.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([Bind("Path,FileName,Content")] ContentMD cnt)
+        public async Task<IActionResult> Edit([Bind("Path,FileName,TopicName,Content")] ContentMD cnt)
         {
             if (ModelState.IsValid)
             {
                 await System.IO.File.WriteAllTextAsync(cnt.FileName, cnt.Content);
+                ViewBag.ShortFileName = cnt.FileName.Split(Path.DirectorySeparatorChar).Last();
                 ViewBag.RenderedMarkdown = Markdown.ParseHtmlString(cnt.Content);
                 ViewBag.Images = PrepareImgs(cnt.Path);
                 return View(cnt);
@@ -184,9 +185,10 @@ namespace mrkdoc.Controllers
             if (ModelState.IsValid)
             {
                 string filename = "README.md";
-                string newpath = Path.Combine(_appEnvironment.WebRootPath, "files", cnt.TopicName);
+                string newpath = "";
                 try
                 {
+                    newpath = Path.Combine(_appEnvironment.WebRootPath, "files", cnt.TopicName);
                     System.IO.Directory.CreateDirectory(newpath);
                     filename = Path.Combine(newpath, filename);
                     System.IO.File.WriteAllText(filename, "# " + cnt.TopicName);

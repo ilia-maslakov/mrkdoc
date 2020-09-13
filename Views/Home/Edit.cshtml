@@ -5,8 +5,11 @@
 }
 
 </style>
+
+
 <form asp-action="Edit">
     <input asp-for="@Model.Path" type="hidden" />
+    <input asp-for="@Model.TopicName" type="hidden" />
     <div class="row">
         <div class="col-md-6">
             <div class="btn-group">
@@ -16,9 +19,9 @@
                 </button>
                 <div class="dropdown-menu">
 
-                    @foreach(var item in ViewBag.Images)
+                    @foreach (var item in ViewBag.Images)
                     {
-                        <a class="filelist dropdown-item" href="#" data-filename="![@item.TopicName](@item.FileName)"><img  src="@item.FileName" style="max-height:40px" /></a>
+                        <a class="filelist dropdown-item" href="#" data-filename="![@item.TopicName](@item.FileName)"><img src="@item.FileName" style="max-height:40px" /></a>
                     }
                 </div>
             </div>
@@ -36,9 +39,7 @@
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
-                    <span>
-                        <h6 style="margin-top:10px;font-weight:bold">@Model.TopicName/@ViewData["ShortFileName"]</h6>
-                    </span>
+                    <h6 style="margin-top:10px;font-weight:bold">@Model.TopicName/@ViewData["ShortFileName"]</h6>
                 </div>
             </div>
         </div>

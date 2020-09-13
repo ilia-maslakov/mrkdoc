@@ -164,7 +164,7 @@ namespace mrkdoc.Controllers
 
                 foreach (string f in files.Where(s => extensions.Any(ext => ext == Path.GetExtension(s))))
                 {
-                    var cropName = f.Replace(" ", "%20").Substring(prefix.Length);
+                    var cropName = f.Replace(" ", "%20").Substring(prefix.Length).Replace("\\", "/");
                     var limg = new ContentMD { TopicName = f.Split(Path.DirectorySeparatorChar).Last(), FileName = cropName };
                     listImages.Add(limg);
                 }

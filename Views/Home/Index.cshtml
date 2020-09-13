@@ -31,8 +31,10 @@
         <div class="newspaper">
         @foreach (var item in Model)
         {
-            <ul>
-                <a asp-action="ViewPage" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName">@item.TopicName</a>
+            <ul style="list-style-type:none">
+                <li>
+                    <a asp-action="ViewPage" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName"><span class="fa fa-file-alt" style="margin-right:9px"></span>@item.TopicName</a>
+                </li>
             </ul>
         }
         </div>

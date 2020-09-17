@@ -4,12 +4,13 @@
     <div class="row" style="border-radius:6px; border:1px solid #e1e4e8">
         <div class="col-md-12">
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <h6 style="margin-top:10px;font-weight:bold">@Model.TopicName » @ViewData["ShortFileName"]</h6>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <a asp-action="Index" class="btn btn-sm btn-light" style="float:right;margin-top:4px;margin-left:12px;">Назад</a>
-                    <a asp-action="Edit" class="btn btn-sm btn-success" asp-route-dirname="@Model.Path" asp-route-filename="@Model.FileName"  style="float:right;margin-top:4px;margin-left:12px;">Исправить</a> 
+                    <a asp-action="Edit" class="btn btn-sm btn-success" asp-route-dirname="@Model.Path" asp-route-filename="@Model.FileName" style="float:right;margin-top:4px;margin-left:12px;">Исправить</a>
+                    <a asp-action="Delete" class="btn btn-sm btn-danger" asp-route-topic=@Model.TopicName asp-route-dirname="@Model.Path" asp-route-filename="@Model.FileName" style="float:right;margin-top:4px;margin-left:12px;">Удалить</a>
                 </div>
             </div>
 
@@ -22,3 +23,8 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <script src="~/js/viewpage.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

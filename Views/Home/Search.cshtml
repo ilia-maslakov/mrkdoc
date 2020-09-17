@@ -1,7 +1,7 @@
 @model IEnumerable<mrkdoc.Models.ContentMD>
 
 <style>
-.res h1,.res h2,.res h3,.res h4,.res h5,.res h6,.res p,.res a {
+.res h1,.res h2,.res h3,.res h4,.res h5,.res h6,.res p,.res {
     font-size: 1rem;
     color: #808080;
 }
@@ -15,7 +15,9 @@
     {
     <div class="row res">
         <div class="col-md-10">
-            <a asp-action="ViewPage" asp-route-searchText="@ViewData["SearchText"]" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName">@item.TopicName</a>
+            <a asp-action="ViewPage" asp-route-searchText="@ViewData["SearchText"]" asp-route-dirname="@item.Path" asp-route-filename="@item.FileName">
+                @item.TopicName
+            </a>
             <div style="margin-left:6px; padding:3px">
             @Html.Raw(@item.Content)
             </div>

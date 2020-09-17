@@ -28,7 +28,7 @@ namespace mrkdoc.Controllers
         public List<ContentMD> Find(string exp){
             var searchResult = new List<ContentMD>();
             int lineNumber = 0;
-            var pathList = _path.Split('/');
+            var pathList = _path.Split(Path.DirectorySeparatorChar);
             var filename = pathList.Last();
             int len = pathList.Length;
             string topic = "";
@@ -40,8 +40,9 @@ namespace mrkdoc.Controllers
                 }
                 topic = pathList[len - 2];
             }
+            path = Path.Combine(path, topic);
 
-            foreach(string l in _lines) {
+            foreach (string l in _lines) {
                 lineNumber++;
                 
                 if (l.ToUpper().IndexOf(exp.ToUpper())>0)
@@ -49,8 +50,8 @@ namespace mrkdoc.Controllers
                     var str = Markdown.Parse(GetNearLines(_lines, lineNumber, 2, 5));
                     ContentMD r = new ContentMD{
                         FileName = _path,
-                        Path = path,
-                        TopicName = topic + " > " + filename + ":" + lineNumber.ToString(),
+                        Path = topic,
+                        TopicName = topic + " » " + filename + ":" + lineNumber.ToString(),
                         Content = str
                     };
                     searchResult.Add(r); 

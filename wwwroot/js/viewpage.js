@@ -1,6 +1,4 @@
 ﻿$(document).ready(function () {
-
-
     $("#view-rendered").ready(function () {
         var el = $("#view-rendered");
         var text = el[0].dataset.searchtext;

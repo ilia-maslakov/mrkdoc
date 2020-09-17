@@ -1,0 +1,16 @@
+@model mrkdoc.Models.ContentMD
+@{
+    ViewData["Title"] = "Удаление статьи";
+}
+
+<h6>Удалить тему?</h6>
+<div class="bd-callout bd-callout-info">
+    <form asp-action="Delete">
+        <input asp-for="TopicName" type="hidden">
+        <h5>
+            @Model.TopicName
+        </h5>
+        <br />
+        <button id="success" type="submit" class="btn btn-danger" style="float:right;">Удалить</button>
+    </form>
+</div>

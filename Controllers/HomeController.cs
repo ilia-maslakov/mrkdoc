@@ -115,7 +115,7 @@ namespace mrkdoc.Controllers
             if (filename != "")
             {
                 // filename must be full qualyty path
-                String markdown = await System.IO.File.ReadAllTextAsync(filename);
+                string markdown = await System.IO.File.ReadAllTextAsync(filename);
                 ViewBag.RenderedMarkdown = Markdown.ParseHtmlString(markdown);
                 ViewBag.ShortFileName = filename.Split(Path.DirectorySeparatorChar).Last();
                 ViewBag.Images = PrepareImgs(dirname);
@@ -206,28 +206,51 @@ namespace mrkdoc.Controllers
             }
         }
 
-
-
-
-/*
-        private async IAsyncEnumerable<ContentMD> PrepareImgsAsync(string dirname)
+        public async Task<IActionResult> Delete(string topic)
         {
-            List<ContentMD> listImages = new List<ContentMD>();
-            if (Directory.Exists(dirname))
+            var c = new Models.ContentMD
             {
-
-                IEnumerable<String> files = Directory.EnumerateFiles(dirname, "*.*", SearchOption.AllDirectories)
-                                        .Where(s => s.EndsWith(".png") || s.EndsWith("*.jp?g") || s.EndsWith("*.gif"));
-
-                await foreach (string f in files)
-                {
-                    var limg = new ContentMD { TopicName = f.Split(Path.DirectorySeparatorChar).Last(), FileName = f };
-                    yield return limg;
-                }
-            }
+                TopicName = topic
+            };
+            return View(c);
         }
 
-*/
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string TopicName)
+        {
+            try
+            {
+                string newpath = Path.Combine(_appEnvironment.WebRootPath, "files", TopicName);
+                System.IO.Directory.Delete(newpath, true);
+            }
+            catch (System.Exception ex)
+            {
+                var nf = new NotFoundObjectResult(ex.Message);
+                return NotFound(nf);
+            }
+            return RedirectToAction("Index");
+        }
+
+        /*
+                private async IAsyncEnumerable<ContentMD> PrepareImgsAsync(string dirname)
+                {
+                    List<ContentMD> listImages = new List<ContentMD>();
+                    if (Directory.Exists(dirname))
+                    {
+
+                        IEnumerable<String> files = Directory.EnumerateFiles(dirname, "*.*", SearchOption.AllDirectories)
+                                                .Where(s => s.EndsWith(".png") || s.EndsWith("*.jp?g") || s.EndsWith("*.gif"));
+
+                        await foreach (string f in files)
+                        {
+                            var limg = new ContentMD { TopicName = f.Split(Path.DirectorySeparatorChar).Last(), FileName = f };
+                            yield return limg;
+                        }
+                    }
+                }
+
+        */
 
         public async Task<IActionResult> AddFile(string dirname, string filename)
         {

@@ -4,8 +4,17 @@
 }
 
 <form class="form-inline" asp-action="AddTopic" method="post">
-    <div class="form-group mx-sm-3 mb-2">
+    <div class="input-group mx-sm-3 mb-2">
+        <div class="input-group-prepend">
+            <a id="load" class="btn btn-outline-info mb-2" asp-action="AddFile" asp-route-filetype="DOCS">Импортировать</a>
+        </div>
         <input asp-for="TopicName" placeholder="Название статьи..." class="form-control" style="min-width:450px">
     </div>
-    <button id="success" type="submit" class="btn btn-success  mb-2" style="float:right;">Добавить</button>
+
+    <span asp-validation-for="TopicName" style="color: brown; font-size: 1.25rem; margin-bottom: 11px; margin-right: 11px;"></span>
+    <button id="success" type="submit" class="btn btn-success mb-2" asp-route-tplTopicPath="@ViewData["tplTopicPath"]" style="float:right;">Добавить</button>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

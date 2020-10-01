@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using mrkdoc.Models;
 using Westwind.AspNetCore.Markdown;
+using System.Diagnostics;
+using System;
 
 namespace mrkdoc.Controllers
 {
@@ -40,7 +42,7 @@ namespace mrkdoc.Controllers
                 }
                 topic = pathList[len - 2];
             }
-            path = Path.Combine(path, topic);
+            //path = Path.Combine(path, topic);
 
             foreach (string l in _lines) {
                 lineNumber++;

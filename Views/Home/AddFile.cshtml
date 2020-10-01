@@ -13,7 +13,7 @@
         border-top: none;
     }
 </style>
-<form id="AddFile" asp-action="AddFile" asp-controller="Home" asp-route-dirname="@ViewData["DirName"]" asp-route-filename="@ViewData["FileName"]" method="post" enctype="multipart/form-data" accept="image/*">
+<form id="AddFile" asp-action="AddFile" asp-controller="Home" asp-route-dirname="@ViewData["DirName"]" asp-route-filename="@ViewData["FileName"]" asp-route-filetype="@ViewData["FileType"]" method="post" enctype="multipart/form-data" accept="image/*">
     <div class="row">
         <div class="col-md-12 custom-file border border-secondary rounded" style="background-image: url(/assets/files.svg); background-position: center center; background-repeat: no-repeat; background-color:whitesmoke; height:200px">
             <input type="file" class="custom-file-input" id="customFile" name="uploadedFile" multiple aria-label="выберите с диска" style="height:100%">

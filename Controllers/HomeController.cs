@@ -11,7 +11,8 @@ using Microsoft.Extensions.Logging;
 using mrkdoc.Models;
 using System.Text;
 using Microsoft.AspNetCore.Http;
-
+using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace mrkdoc.Controllers
 {
@@ -110,6 +111,23 @@ namespace mrkdoc.Controllers
             return View(l);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Edit([Bind("Path,FileName,TopicName,Content")] ContentMD cnt)
+        {
+            if (ModelState.IsValid)
+            {
+                await System.IO.File.WriteAllTextAsync(cnt.FileName, cnt.Content);
+                ViewBag.ShortFileName = cnt.FileName.Split(Path.DirectorySeparatorChar).Last();
+                ViewBag.RenderedMarkdown = Markdown.ParseHtmlString(cnt.Content);
+                ViewBag.Images = PrepareImgs(cnt.Path);
+                return View(cnt);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         public async Task<IActionResult> Edit(string dirname, string filename)
         {
             if (filename != "")
@@ -135,22 +153,6 @@ namespace mrkdoc.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit([Bind("Path,FileName,TopicName,Content")] ContentMD cnt)
-        {
-            if (ModelState.IsValid)
-            {
-                await System.IO.File.WriteAllTextAsync(cnt.FileName, cnt.Content);
-                ViewBag.ShortFileName = cnt.FileName.Split(Path.DirectorySeparatorChar).Last();
-                ViewBag.RenderedMarkdown = Markdown.ParseHtmlString(cnt.Content);
-                ViewBag.Images = PrepareImgs(cnt.Path);
-                return View(cnt);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
 
         private IEnumerable<ContentMD> PrepareImgs(string dirname)
         {
@@ -174,24 +176,43 @@ namespace mrkdoc.Controllers
           
         }
 
-        public async Task<IActionResult> AddTopic()
+        public ActionResult AddTopic(string topicName, string tplTopicPath)
         {
+            ViewBag.tplTopicPath = tplTopicPath;
             return View();
         }
 
+        private void ReplaceImgPath(string filename, string from, string to)
+        {
+            string text = System.IO.File.ReadAllText(filename);
+            text = text.Replace(from, to);
+            System.IO.File.WriteAllText(filename, text);
+        }
+
+
         [HttpPost]
-        public async Task<IActionResult> AddTopic([Bind("TopicName")] ContentMD cnt)
+        public IActionResult AddTopic([Bind("TopicName")] ContentMD cnt, string tplTopicPath)
         {
             if (ModelState.IsValid)
             {
                 string filename = "README.md";
-                string newpath = "";
+                string newpath;
                 try
                 {
                     newpath = Path.Combine(_appEnvironment.WebRootPath, "files", cnt.TopicName);
-                    System.IO.Directory.CreateDirectory(newpath);
                     filename = Path.Combine(newpath, filename);
-                    System.IO.File.WriteAllText(filename, "# " + cnt.TopicName);
+                    // copy from template
+                    if (tplTopicPath != null && tplTopicPath != "")
+                    {
+                        Directory.Move(tplTopicPath, newpath);
+
+                        ReplaceImgPath(filename, tplTopicPath, ("/files" + "/" + cnt.TopicName).Replace(" ", "%20"));
+                    } 
+                    else
+                    {
+                        Directory.CreateDirectory(newpath);
+                        System.IO.File.WriteAllText(filename, "# " + cnt.TopicName);
+                    }
                 }
                 catch (System.Exception ex)
                 {
@@ -206,7 +227,7 @@ namespace mrkdoc.Controllers
             }
         }
 
-        public async Task<IActionResult> Delete(string topic)
+        public IActionResult Delete(string topic)
         {
             var c = new Models.ContentMD
             {
@@ -217,7 +238,7 @@ namespace mrkdoc.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string TopicName)
+        public  IActionResult DeleteConfirmed(string TopicName)
         {
             try
             {
@@ -232,50 +253,122 @@ namespace mrkdoc.Controllers
             return RedirectToAction("Index");
         }
 
-        /*
-                private async IAsyncEnumerable<ContentMD> PrepareImgsAsync(string dirname)
+        public void RunProcess(string codepage, string program, string arg, string mdpath)
+        {
+            try
+            {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var outputEncoding = Encoding.GetEncoding(codepage);
+                var process = new Process()
                 {
-                    List<ContentMD> listImages = new List<ContentMD>();
-                    if (Directory.Exists(dirname))
+                    StartInfo = new ProcessStartInfo
                     {
-
-                        IEnumerable<String> files = Directory.EnumerateFiles(dirname, "*.*", SearchOption.AllDirectories)
-                                                .Where(s => s.EndsWith(".png") || s.EndsWith("*.jp?g") || s.EndsWith("*.gif"));
-
-                        await foreach (string f in files)
-                        {
-                            var limg = new ContentMD { TopicName = f.Split(Path.DirectorySeparatorChar).Last(), FileName = f };
-                            yield return limg;
-                        }
+                        FileName = program,
+                        Arguments = arg,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        StandardOutputEncoding = outputEncoding
                     }
-                }
+                };
+                process.Start();
+                string result = process.StandardOutput.ReadToEnd();
+                string err = process.StandardError.ReadToEnd();
 
-        */
+                byte[] bytes = outputEncoding.GetBytes(result);
+                result = Encoding.UTF8.GetString(bytes);
+                /* remove {width="6.291666666666667in" ... height="5.291666666666667in"} */
+                result = Regex.Replace(result, @"({width.+)|(height.+})", "", RegexOptions.None);
+                //result = Regex.Replace(result, @"({width.+? in\"})", "", RegexOptions.Singleline);
 
-        public async Task<IActionResult> AddFile(string dirname, string filename)
+                System.IO.File.WriteAllText(mdpath, result);
+                process.WaitForExit();
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex);
+            }
+
+        }
+
+
+        public string ConvertDocxToMD(string uploadedFile, string topic)
+        {
+            string filename = "README.md";
+            string newpath;
+            string mdpath;
+            try
+            {
+                newpath = Path.Combine(_appEnvironment.WebRootPath, "tmp", topic);
+                Directory.CreateDirectory(newpath);
+                mdpath = Path.Combine(newpath, filename);
+                //inputFilename = Path.Combine(_appEnvironment.WebRootPath, "files", topic, "test.docx");
+                RunProcess("windows-1251", "pandoc.exe", uploadedFile + " -t markdown " + " --extract-media " + newpath, mdpath);
+            }
+            catch (System.Exception ex)
+            {
+                return "error:" + ex.Message;
+            }
+            return mdpath;
+        }
+
+        public IActionResult AddFile(string dirname, string filename, string filetype)
         {
             var fl = new List<ContentMD>();
             ViewBag.DirName = dirname;
             ViewBag.FileName = filename;
+            ViewBag.FileType = filetype;
             return View(fl);
         }
         [HttpPost]
-        public async Task<IActionResult> AddFile(IList<IFormFile> uploadedFile, string dirname, string filename)
+        public async Task<IActionResult> AddFile(IList<IFormFile> uploadedFile, string dirname, string filename, string filetype)
         {
-            if (uploadedFile != null)
+            if (uploadedFile != null && uploadedFile.Count > 0)
             {
                 foreach (var cfile in uploadedFile)
                 {
                     // путь к папке Files
+                    
                     string webRoot = _appEnvironment.WebRootPath;
-                    string path = Path.Combine(dirname, cfile.FileName);
-
-                    // сохраняем файл в папку Files в каталоге wwwroot
-                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    string path;
+                    if (filetype == "IMAGE")
                     {
-                        await cfile.CopyToAsync(fileStream);
+                        // сохраняем файл в папку Files в каталоге wwwroot
+                        path = Path.Combine(dirname, cfile.FileName);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await cfile.CopyToAsync(fileStream);
+                        }
+                    }
+                    else
+                    {
+                         
+                        string tmpTopicName = Guid.NewGuid().ToString();
+                        string ext = Path.GetExtension(cfile.FileName);
+                        path = Path.Combine(webRoot, "tmp", tmpTopicName + ext);
+
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        { 
+                            await cfile.CopyToAsync(fileStream);
+                        }
+                        string topicPath = ConvertDocxToMD(path, tmpTopicName);
+                        if (topicPath.Contains("error:"))
+                        {
+                            topicPath = "";
+                        }
+                        else
+                        {
+                            topicPath = Path.GetDirectoryName(topicPath);
+                        }
+                        return RedirectToAction("AddTopic", new { topicName = cfile.FileName, tplTopicPath = topicPath });
                     }
                 }
+            } else
+            {
+                return RedirectToAction("AddFile", new { dirname, filename, filetype });
             }
             
             ContentMD file = new ContentMD { FileName = filename, Path = dirname };
@@ -331,5 +424,5 @@ namespace mrkdoc.Controllers
         }
 */
 
-    }
+            }
 }
